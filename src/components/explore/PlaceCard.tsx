@@ -11,14 +11,16 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 interface Props {
   place: any;
   image: any;
+  onPress?: () => void;
 }
 
 const PlaceCard = ({
   place,
   image,
+  onPress,
 }: Props) => {
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
 
       <Image
         source={image}
