@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -62,10 +64,18 @@ const LoginScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+      <View style={styles.gradient}>
       <View style={styles.header}>
         <Text style={styles.logoText}>
           <Text style={{ color: '#1565C0' }}>Travel</Text>
@@ -153,7 +163,10 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </KeyboardAvoidingView>
+      </View>
+      </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
