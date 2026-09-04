@@ -53,13 +53,30 @@ export default StyleSheet.create({
   },
 
   picker: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#FFFFFF',
     borderRadius: 15,
     borderWidth: 1,
     borderColor: '#E5E7EB',
     marginBottom: 20,
     overflow: 'hidden',
-    color: "#050505",
+  },
+
+  pickerSelect: {
+    color: '#111827',
+    height: 52,
+  },
+
+  pickerItem: {
+    color: '#111827',
+  },
+
+  destinationPickerSelect: {
+    color: '#111827',
+    height: 52,
+  },
+
+  destinationPickerItem: {
+    color: '#111827',
   },
 
   button: {
@@ -321,6 +338,72 @@ startTripButtonText: {
     elevation: 4,
   },
 
+  filterCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 25,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: {width: 0, height: 4},
+    elevation: 4,
+  },
+
+  filterHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+
+  filterTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1565C0',
+  },
+
+  clearFilters: {
+    color: '#E53935',
+    fontWeight: '700',
+  },
+
+  filterLabel: {
+    color: '#374151',
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 10,
+    marginBottom: 5,
+  },
+
+  filterPicker: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    overflow: 'hidden',
+    height: 50,
+    justifyContent: 'center',
+  },
+
+  filterPickerSelect: {
+    color: '#111827',
+    height: 50,
+  },
+
+  filterPlaceholder: {
+    color: '#111827',
+  },
+
+  filterColumns: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+
+  filterColumn: {
+    flex: 1,
+  },
+
   recommendationTitle: {
     fontSize: 22,
     fontWeight: '700',
@@ -451,5 +534,22 @@ startTripButtonText: {
     lineHeight: 21,
     marginTop: 14,
     marginHorizontal: 20,
+  },
+
+  goButton: {
+    backgroundColor: '#1565C0',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 13,
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+
+  goButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });
