@@ -55,6 +55,10 @@ const RoutesScreen = () => {
   const estimatedTime = (distance / 60).toFixed(1);
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState<any | null>(null);
+  const [cuisineFilter, setCuisineFilter] = useState('all');
+  const [budgetFilter, setBudgetFilter] = useState('all');
+  const [mealFilter, setMealFilter] = useState('all');
+  const [dietaryFilter, setDietaryFilter] = useState('all');
 
   const recommendationCount = route.length * 2;
 
@@ -123,6 +127,39 @@ const RoutesScreen = () => {
       defaultRestaurantImage;
   };
 
+  const openRestaurantInMaps = async (restaurant: any) => {
+    const hasCoordinates =
+      restaurant?.latitude !== undefined && restaurant?.longitude !== undefined;
+    const query = hasCoordinates
+      ? `${restaurant.latitude},${restaurant.longitude}`
+      : `${restaurant?.name || 'Restaurant'}, ${restaurant?.city || ''}`;
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      Alert.alert('Error', 'Unable to open Google Maps.');
+    }
+  };
+
+  const filteredRestaurants = restaurants.filter(restaurant => {
+    const cuisine = String(
+      restaurant.cuisineType || restaurant.cuisine || restaurant.category || '',
+    ).toLowerCase();
+    const budget = String(restaurant.priceRange || '').toLowerCase();
+    const meal = String(restaurant.mealType || restaurant.meal || '').toLowerCase();
+    const dietary = String(
+      restaurant.dietaryPreference || restaurant.dietary || '',
+    ).toLowerCase();
+
+    return (
+      (cuisineFilter === 'all' || cuisine.includes(cuisineFilter)) &&
+      (budgetFilter === 'all' || budget === budgetFilter) &&
+      (mealFilter === 'all' || meal.includes(mealFilter)) &&
+      (dietaryFilter === 'all' || dietary.includes(dietaryFilter))
+    );
+  });
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -138,9 +175,15 @@ const RoutesScreen = () => {
           <Text style={styles.label}>Starting City</Text>
 
           <View style={styles.picker}>
-            <Picker selectedValue={start} onValueChange={setStart}>
+            <Picker
+              selectedValue={start}
+              onValueChange={setStart}
+              style={styles.pickerSelect}
+              itemStyle={styles.pickerItem}
+              dropdownIconColor="#111827"
+            >
               {cities.map(city => (
-                <Picker.Item key={city} label={city} value={city} />
+                <Picker.Item key={city} label={city} value={city} color="#FFFFFF" />
               ))}
             </Picker>
           </View>
@@ -148,9 +191,15 @@ const RoutesScreen = () => {
           <Text style={styles.label}>Destination</Text>
 
           <View style={styles.picker}>
-            <Picker selectedValue={destination} onValueChange={setDestination}>
+            <Picker
+              selectedValue={destination}
+              onValueChange={setDestination}
+              style={styles.destinationPickerSelect}
+              itemStyle={styles.destinationPickerItem}
+              dropdownIconColor="#111827"
+            >
               {cities.map(city => (
-                <Picker.Item key={city} label={city} value={city} />
+                <Picker.Item key={city} label={city} value={city} color="#FFFFFF" />
               ))}
             </Picker>
           </View>
@@ -237,17 +286,82 @@ const RoutesScreen = () => {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.filterCard}>
+          <View style={styles.filterHeader}>
+            <Text style={styles.filterTitle}>🍽 Restaurant Filters</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setCuisineFilter('all');
+                setBudgetFilter('all');
+                setMealFilter('all');
+                setDietaryFilter('all');
+              }}
+            >
+              <Text style={styles.clearFilters}>Clear</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.filterLabel}>Cuisine Type</Text>
+          <View style={styles.filterPicker}>
+            <Picker selectedValue={cuisineFilter} onValueChange={setCuisineFilter} style={[styles.filterPickerSelect, cuisineFilter === 'all' && styles.filterPlaceholder]} dropdownIconColor="#111827">
+              <Picker.Item label="All cuisines" value="all" color="#111827" />
+              <Picker.Item label="Indian" value="indian" color="#FFFFFF" />
+              <Picker.Item label="Mexican" value="mexican" color="#FFFFFF" />
+              <Picker.Item label="Fast Food" value="fast" color="#FFFFFF" />
+              <Picker.Item label="Seafood" value="seafood" color="#FFFFFF" />
+              <Picker.Item label="Sri Lankan" value="sri lankan" color="#FFFFFF" />
+            </Picker>
+          </View>
+
+          <View style={styles.filterColumns}>
+            <View style={styles.filterColumn}>
+              <Text style={styles.filterLabel}>Budget Range</Text>
+              <View style={styles.filterPicker}>
+                <Picker selectedValue={budgetFilter} onValueChange={setBudgetFilter} style={[styles.filterPickerSelect, budgetFilter === 'all' && styles.filterPlaceholder]} dropdownIconColor="#111827">
+                  <Picker.Item label="Any budget" value="all" color="#111827" />
+                  <Picker.Item label="$" value="$" color="#FFFFFF" />
+                  <Picker.Item label="$$" value="$$" color="#FFFFFF" />
+                  <Picker.Item label="$$$" value="$$$" color="#FFFFFF" />
+                  <Picker.Item label="$$$$" value="$$$$" color="#FFFFFF" />
+                </Picker>
+              </View>
+            </View>
+            <View style={styles.filterColumn}>
+              <Text style={styles.filterLabel}>Meal Type</Text>
+              <View style={styles.filterPicker}>
+                <Picker selectedValue={mealFilter} onValueChange={setMealFilter} style={[styles.filterPickerSelect, mealFilter === 'all' && styles.filterPlaceholder]} dropdownIconColor="#111827">
+                  <Picker.Item label="Any meal" value="all" color="#111827" />
+                  <Picker.Item label="Breakfast" value="breakfast" color="#FFFFFF" />
+                  <Picker.Item label="Lunch" value="lunch" color="#FFFFFF" />
+                  <Picker.Item label="Dinner" value="dinner" color="#FFFFFF" />
+                  <Picker.Item label="Snack" value="snack" color="#FFFFFF" />
+                </Picker>
+              </View>
+            </View>
+          </View>
+
+          <Text style={styles.filterLabel}>Dietary Preference</Text>
+          <View style={styles.filterPicker}>
+            <Picker selectedValue={dietaryFilter} onValueChange={setDietaryFilter} style={[styles.filterPickerSelect, dietaryFilter === 'all' && styles.filterPlaceholder]} dropdownIconColor="#111827">
+              <Picker.Item label="Any preference" value="all" color="#111827" />
+              <Picker.Item label="Vegetarian" value="vegetarian" color="#FFFFFF" />
+              <Picker.Item label="Vegan" value="vegan" color="#FFFFFF" />
+              <Picker.Item label="Halal" value="halal" color="#FFFFFF" />
+            </Picker>
+          </View>
+        </View>
+
         <View style={styles.recommendationCard}>
           <Text style={styles.recommendationTitle}>
             🍽 Recommended Restaurants
           </Text>
 
-          {restaurants.length === 0 ? (
+          {filteredRestaurants.length === 0 ? (
             <Text style={styles.noRecommendation}>
               No restaurants found along this route.
             </Text>
           ) : (
-            restaurants.map((restaurant, index) => (
+            filteredRestaurants.map((restaurant, index) => (
               <TouchableOpacity
                 key={restaurant._id || index}
                 style={styles.restaurantItem}
@@ -323,6 +437,12 @@ const RoutesScreen = () => {
                     {selectedRestaurant.description}
                   </Text>
                 )}
+                <TouchableOpacity
+                  style={styles.goButton}
+                  onPress={() => openRestaurantInMaps(selectedRestaurant)}
+                >
+                  <Text style={styles.goButtonText}>GO</Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
