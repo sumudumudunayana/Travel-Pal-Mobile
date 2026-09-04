@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import styles from "../../styles/home/HomeStyles";
 
@@ -22,10 +23,11 @@ const HomeScreen = () => {
   ];
 
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
+    <SafeAreaView style={{flex: 1}} edges={['top', 'bottom']}>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
 
       <Text style={styles.greeting}>Good Morning 👋</Text>
 
@@ -107,7 +109,8 @@ const HomeScreen = () => {
 
       </View>
 
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
