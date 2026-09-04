@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -69,17 +70,17 @@ const SavedScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loader}>
+      <SafeAreaView style={styles.loader} edges={['top', 'bottom']}>
         <ActivityIndicator
           size="large"
           color="#1565C0"
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <>
+    <SafeAreaView style={{flex: 1}} edges={['top', 'bottom']}>
     <FlatList
       data={trips}
       keyExtractor={(item) => item._id}
@@ -152,7 +153,7 @@ const SavedScreen = () => {
         </View>
       )}
     </Modal>
-    </>
+    </SafeAreaView>
   );
 };
 
