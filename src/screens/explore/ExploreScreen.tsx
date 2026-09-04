@@ -8,6 +8,10 @@ import {
   StyleSheet,
   ActivityIndicator,
   ImageSourcePropType,
+  TouchableOpacity,
+  Modal,
+  Linking,
+  Alert,
 } from 'react-native';
 
 import SearchBar from '../../components/explore/SearchBar';
@@ -139,6 +143,12 @@ interface Place {
   rating: number;
   priceRange: string;
   image: string;
+  category?: string;
+  description?: string;
+  address?: string;
+  openingHours?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 const ExploreScreen = () => {
@@ -146,6 +156,10 @@ const ExploreScreen = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<{
+    place: Place;
+    image: ImageSourcePropType;
+  } | null>(null);
 
   useEffect(() => {
     loadPlaces();
@@ -231,6 +245,25 @@ const ExploreScreen = () => {
     return getImage(place.type);
   };
 
+  const openPlaceDetails = (place: Place, index: number) => {
+    setSelectedPlace({place, image: getPlaceImage(place, index)});
+  };
+
+  const openPlaceInMaps = async (place: Place) => {
+    const hasCoordinates =
+      place.latitude !== undefined && place.longitude !== undefined;
+    const query = hasCoordinates
+      ? `${place.latitude},${place.longitude}`
+      : `${place.name}, ${place.city}`;
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      Alert.alert('Error', 'Unable to open Google Maps.');
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -304,7 +337,7 @@ const ExploreScreen = () => {
           data={filterPlaces('hotel')}
           keyExtractor={item => item._id}
           renderItem={({ item, index }) => (
-            <PlaceCard place={item} image={getPlaceImage(item, index)} />
+            <PlaceCard place={item} image={getPlaceImage(item, index)} onPress={() => openPlaceDetails(item, index)} />
           )}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.list}
@@ -317,7 +350,7 @@ const ExploreScreen = () => {
           data={filterPlaces('restaurant')}
           keyExtractor={item => item._id}
           renderItem={({ item, index }) => (
-            <PlaceCard place={item} image={getPlaceImage(item, index)} />
+            <PlaceCard place={item} image={getPlaceImage(item, index)} onPress={() => openPlaceDetails(item, index)} />
           )}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.list}
@@ -330,7 +363,7 @@ const ExploreScreen = () => {
           data={filterPlaces('attraction')}
           keyExtractor={item => item._id}
           renderItem={({ item, index }) => (
-            <PlaceCard place={item} image={getPlaceImage(item, index)} />
+            <PlaceCard place={item} image={getPlaceImage(item, index)} onPress={() => openPlaceDetails(item, index)} />
           )}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.list}
@@ -343,11 +376,56 @@ const ExploreScreen = () => {
           data={filterPlaces('cafe')}
           keyExtractor={item => item._id}
           renderItem={({ item, index }) => (
-            <PlaceCard place={item} image={getPlaceImage(item, index)} />
+            <PlaceCard place={item} image={getPlaceImage(item, index)} onPress={() => openPlaceDetails(item, index)} />
           )}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.list}
         />}
+
+        <Modal
+          visible={selectedPlace !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setSelectedPlace(null)}
+        >
+          {selectedPlace && (
+            <View style={styles.modalBackdrop}>
+              <View style={styles.placeModal}>
+                <Image source={selectedPlace.image} style={styles.modalImage} />
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setSelectedPlace(null)}
+                  accessibilityLabel="Close place details"
+                >
+                  <Text style={styles.closeButtonText}>×</Text>
+                </TouchableOpacity>
+                <Text style={styles.modalPlaceName}>{selectedPlace.place.name}</Text>
+                <Text style={styles.modalRating}>
+                  ⭐ {selectedPlace.place.rating}  •  {selectedPlace.place.priceRange}
+                </Text>
+                <Text style={styles.modalDetail}>📍 {selectedPlace.place.city}</Text>
+                <Text style={styles.modalDetail}>
+                  🍽 {selectedPlace.place.category || selectedPlace.place.type}
+                </Text>
+                {selectedPlace.place.openingHours && (
+                  <Text style={styles.modalDetail}>🕒 {selectedPlace.place.openingHours}</Text>
+                )}
+                {selectedPlace.place.address && (
+                  <Text style={styles.modalDetail}>🏠 {selectedPlace.place.address}</Text>
+                )}
+                {selectedPlace.place.description && (
+                  <Text style={styles.modalDescription}>{selectedPlace.place.description}</Text>
+                )}
+                <TouchableOpacity
+                  style={styles.goButton}
+                  onPress={() => openPlaceInMaps(selectedPlace.place)}
+                >
+                  <Text style={styles.goButtonText}>GO</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
@@ -404,5 +482,88 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 20,
     paddingBottom: 10,
+  },
+
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+
+  placeModal: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 22,
+    overflow: 'hidden',
+    paddingBottom: 22,
+  },
+
+  modalImage: {
+    width: '100%',
+    height: 190,
+  },
+
+  closeButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  closeButtonText: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    lineHeight: 30,
+  },
+
+  modalPlaceName: {
+    fontSize: 23,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginTop: 18,
+    marginHorizontal: 20,
+    marginRight: 60,
+  },
+
+  modalRating: {
+    color: '#F59E0B',
+    fontWeight: '700',
+    marginTop: 8,
+    marginHorizontal: 20,
+  },
+
+  modalDetail: {
+    color: '#4B5563',
+    marginTop: 9,
+    marginHorizontal: 20,
+  },
+
+  modalDescription: {
+    color: '#374151',
+    lineHeight: 21,
+    marginTop: 14,
+    marginHorizontal: 20,
+  },
+
+  goButton: {
+    backgroundColor: '#1565C0',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 13,
+    marginTop: 20,
+    marginHorizontal: 20,
+  },
+
+  goButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });
