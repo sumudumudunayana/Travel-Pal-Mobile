@@ -4,13 +4,27 @@ export default StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+  },
+
+  gradient: {
+    flex: 1,
+    paddingHorizontal: 20,
+    backgroundColor: '#E8F3FA',
+  },
+
+  scroll: {
+    flex: 1,
+  },
+
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24,
   },
 
   header: {
     alignItems: 'center',
-    paddingTop: 70,
-    paddingBottom: 20,
+    paddingTop: 55,
+    paddingBottom: 18,
   },
 
   logoText: {
@@ -19,12 +33,21 @@ export default StyleSheet.create({
   },
 
   content: {
-    paddingHorizontal: 25,
-    paddingTop: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.96)',
+    borderRadius: 28,
+    marginTop: 28,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    paddingBottom: 24,
+    shadowColor: '#1565C0',
+    shadowOpacity: 0.14,
+    shadowRadius: 18,
+    shadowOffset: {width: 0, height: 8},
+    elevation: 7,
   },
 
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#212121',
     marginBottom: 8,
@@ -86,13 +109,22 @@ export default StyleSheet.create({
     backgroundColor: '#1565C0',
     paddingVertical: 16,
     borderRadius: 14,
+    overflow: 'hidden',
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#1565C0',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: {width: 0, height: 4},
+    elevation: 5,
   },
 
   loginButtonText: {
     color: '#FFFFFF',
     fontSize: 17,
     fontWeight: 'bold',
+    textAlign: 'center',
+    includeFontPadding: false,
   },
 
   dividerRow: {
@@ -121,6 +153,11 @@ export default StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 5,
+    shadowOffset: {width: 0, height: 2},
+    elevation: 2,
   },
 
   googleButtonText: {
